@@ -5,6 +5,29 @@ const { db } = require('../util/admin');
 exports.getAllStories = (request, response) => {
 	db
 		.collection('stories')
+		.orderBy('createdAt', 'desc')
+		.get()
+		.then((data) => {
+			let stories = [];
+			data.forEach((doc) => {
+				stories.push({
+                    storyId: doc.id,
+                    title: doc.data().title,
+					body: doc.data().body,
+					createdAt: doc.data().createdAt,
+				});
+			});
+			return response.json(stories);
+		})
+		.catch((err) => {
+			console.error(err);
+			return response.status(500).json({ error: err.code});
+		});
+};
+
+exports.getMyStories = (request, response) => {
+	db
+		.collection('stories')
         .where('username', '==', request.user.username)
 		.orderBy('createdAt', 'desc')
 		.get()
@@ -60,7 +83,7 @@ exports.postOneStory = (request, response) => {
     }
     
     const newStoryItem = {
-        username: request.user.name,
+        username: request.user.username,
         title: request.body.title,
         body: request.body.body,
         createdAt: new Date().toISOString(),

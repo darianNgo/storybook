@@ -4,8 +4,10 @@ const functions = require('firebase-functions');
 const app = require('express')();
 const auth = require('./util/auth');
 
+
 const {
     getAllStories,
+    getMyStories,
     getOneStory,
     postOneStory,
     deleteStory,
@@ -22,11 +24,15 @@ const {
 
 
 // stories.js
-app.get('/stories', auth, getAllStories);
+app.get('/stories', getAllStories);
+app.get('/stories/user', auth, getMyStories);
 app.get('/story/:storyId', auth, getOneStory);
 app.post('/story', auth, postOneStory);
 app.delete('/story/:storyId', auth, deleteStory);
 app.put('/story/:storyId', auth, editStory);
+
+// /stories/all
+// /stories/:user
 
 // users.js
 app.post('/login', loginUser);
