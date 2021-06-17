@@ -50,7 +50,7 @@ const styles = ((theme) => ({
 	form: {
 		width: '98%',
 		marginLeft: 13,
-		marginTop: theme.spacing(3)
+		marginTop: theme.spacing(12)
 	},
 	toolbar: theme.mixins.toolbar,
 	root: {
@@ -288,7 +288,7 @@ class stories extends Component {
 						</AppBar>
 
 						<form className={classes.form} noValidate>
-							<Grid container spacing={2}>
+							<Grid container spacing={2} >
 								<Grid item xs={12}>
 									<TextField
 										variant="outlined"
