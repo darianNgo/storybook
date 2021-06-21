@@ -125,7 +125,7 @@ class stories extends Component {
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/stories')
+			.get('/stories/user')
 			.then((response) => {
 				this.setState({
 					stories: response.data,
