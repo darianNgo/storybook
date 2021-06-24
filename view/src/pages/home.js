@@ -11,6 +11,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import Button from'@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -80,6 +81,10 @@ class home extends Component {
         this.props.history.push('/login');
     };
 
+	exploreHandler = (event) => {
+		this.props.history.push('/explore')
+	}
+
     constructor(props) {
         super(props);
 
@@ -133,10 +138,15 @@ class home extends Component {
 				<div className={classes.root}>
 					<CssBaseline />
 					<AppBar position="fixed" className={classes.appBar}>
-						<Toolbar>
+						<Toolbar variant="regular">
 							<Typography variant="h6" noWrap>
 								StoryBook
 							</Typography>
+							<Button 
+								color="inherit"
+								onClick={this.exploreHandler}>
+								Explore
+							</Button>
 						</Toolbar>
 					</AppBar>
 					<Drawer

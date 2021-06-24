@@ -93,13 +93,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-class stories extends Component {
+class exploreStories extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			stories: '',
 			title: '',
+			userName: '',
 			body: '',
 			storyId: '',
 			errors: [],
@@ -109,8 +110,6 @@ class stories extends Component {
 			viewOpen: false,
 		};
 
-		this.deleteStoryHandler = this.deleteStoryHandler.bind(this);
-		this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
 		this.handleViewOpen = this.handleViewOpen.bind(this);
 	}
 
@@ -125,7 +124,7 @@ class stories extends Component {
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/stories/user')
+			.get('/stories')
 			.then((response) => {
 				this.setState({
 					stories: response.data,
@@ -137,34 +136,10 @@ class stories extends Component {
 			});
 	};
 
-	deleteStoryHandler(data) {
-		authMiddleWare(this.props.history);
-		const authToken = localStorage.getItem('AuthToken');
-		axios.defaults.headers.common = { Authorization: `${authToken}` };
-		let storyId = data.story.storyId;
-		axios
-			.delete(`story/${storyId}`)
-			.then(() => {
-				window.location.reload();
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}
-
-	handleEditClickOpen(data) {
-		this.setState({
-			title: data.story.title,
-			body: data.story.body,
-			storyId: data.story.storyId,
-			buttonType: 'Edit',
-			open: true
-		});
-	}
-
 	handleViewOpen(data) {
 		this.setState({
 			title: data.story.title,
+			userName: data.story.userName,
 			body: data.story.body,
 			viewOpen: true
 		});
@@ -198,6 +173,7 @@ class stories extends Component {
 		const handleClickOpen = () => {
 			this.setState({
 				storyId: '',
+				userName: '',
 				title: '',
 				body: '',
 				buttonType: '',
@@ -334,6 +310,9 @@ class stories extends Component {
 										<Typography variant="h5" component="h2">
 											{story.title}
 										</Typography>
+										<Typography>
+											Username Here
+										</Typography>
 										<Typography className={classes.pos} color="textSecondary">
 											{dayjs(story.createdAt).fromNow()}
 										</Typography>
@@ -345,12 +324,6 @@ class stories extends Component {
 										<Button size="small" color="primary" onClick={() => this.handleViewOpen({ story })}>
 											{' '}
 											View{' '}
-										</Button>
-										<Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ story })}>
-											Edit
-										</Button>
-										<Button size="small" color="primary" onClick={() => this.deleteStoryHandler({ story })}>
-											Delete
 										</Button>
 									</CardActions>
 								</Card>
@@ -390,34 +363,4 @@ class stories extends Component {
 	}
 }
 
-export default (withStyles(styles)(stories));
-
-// import React, { Component } from 'react'
-
-// import withStyles from '@material-ui/core/styles/withStyles';
-// import Typography from '@material-ui/core/Typography';
-
-// const styles = ((theme) => ({
-//     content: {
-//         flexGrow: 1,
-//         padding: theme.spacing(3),
-//     },
-//     toolbar: theme.mixins.toolbar,
-//     })
-// );
-
-// class stories extends Component {
-//     render() {
-//         const { classes } = this.props;
-//         return (
-//             <main className={classes.content}>
-//             <div className={classes.toolbar} />
-//             <Typography paragraph>
-//                 Hello I am stories
-//             </Typography>
-//             </main>
-//         )
-//     }
-// }
-
-// export default (withStyles(styles)(stories));
+export default (withStyles(styles)(exploreStories));

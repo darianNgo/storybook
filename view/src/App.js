@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import login from './pages/login';
 import signup from './pages/signup';
 import home from './pages/home'
+import explore from './pages/explore'
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 
@@ -24,6 +25,7 @@ function App() {
       <div>
         <Switch>
           <Route exact path="/" component={home}/>
+          <Route exact path="/explore" component={explore}/>
           <Route exact path="/login" component={login}/>
           <Route exact path="/signup" component={signup}/>
         </Switch>
