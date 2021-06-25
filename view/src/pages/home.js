@@ -3,6 +3,12 @@ import axios from 'axios';
 
 import Account from '../components/account';
 import Stories from '../components/stories';
+import Explore from '../components/explore';
+
+import DeleteIcon from '@material-ui/icons/Delete';
+import MenuIcon from '@material-ui/icons/Menu';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -21,6 +27,9 @@ import NotesIcon from '@material-ui/icons/Notes';
 import Avatar from '@material-ui/core/avatar';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+
+
 
 import { authMiddleWare } from '../util/auth'
 // import { response } from 'express';
@@ -65,25 +74,53 @@ const styles = (theme) => ({
 
 class home extends Component {
     state = {
-        render: false
+        render: 0,
+		drawer: false,
     };
 
+	openDrawer = (event) => {
+		this.setState({drawer: true})
+	};
+
+	closeDrawer = (event) => {
+		this.setState({drawer: false})
+	};
+
     loadAccountPage = (event) => {
-        this.setState({render: true})
+        this.setState({render: 1})
+		this.closeDrawer()
     };
 
     loadStoryPage = (event) => {
-        this.setState({render: false})
+        this.setState({render: 0})
+		this.closeDrawer()
     };
+
+	loadExplorePage = (event) => {
+		this.setState({render: 2})
+	};
 
     logoutHandler = (event) => {
         localStorage.removeItem('AuthToken');
         this.props.history.push('/login');
     };
 
-	exploreHandler = (event) => {
-		this.props.history.push('/explore')
-	}
+	renderSwitch(page) {
+		switch(page) {
+			case 0:
+				return <Stories/>;
+			case 1:
+				return <Account/>
+			case 2:
+				return <Explore />
+			default: 
+				return <Stories />
+		}
+	}  
+
+	// homeHandler = (event) => {
+	// 	this.props.hisory.push('/')
+	// };
 
     constructor(props) {
         super(props);
@@ -139,24 +176,45 @@ class home extends Component {
 					<CssBaseline />
 					<AppBar position="fixed" className={classes.appBar}>
 						<Toolbar variant="regular">
+							<IconButton
+							    color="inherit"
+								aria-label="open drawer"
+								onClick={this.openDrawer}>
+									<MenuIcon />
+							</IconButton>
 							<Typography variant="h6" noWrap>
 								StoryBook
 							</Typography>
 							<Button 
 								color="inherit"
-								onClick={this.exploreHandler}>
+								onClick={this.loadStoryPage}>
+								Home
+							</Button>
+							<Button 
+								color="inherit"
+								onClick={this.loadExplorePage}>
 								Explore
 							</Button>
 						</Toolbar>
 					</AppBar>
 					<Drawer
 						className={classes.drawer}
-						variant="permanent"
+						variant="temporary"
+						anchor="left"
+						open={this.state.drawer}
+						SlideProps
 						classes={{
 							paper: classes.drawerPaper
 						}}
 					>
 						<div className={classes.toolbar} />
+						<IconButton
+							color="inherit"
+							onClick={this.closeDrawer}
+							edge="start"
+						>
+							<ArrowBackIcon />
+						</IconButton>
 						<Divider />
 						<center>
 							<Avatar src={this.state.profilePicture} className={classes.avatar} />
@@ -170,9 +228,9 @@ class home extends Component {
 							<ListItem button key="Stories" onClick={this.loadStoryPage}>
 								<ListItemIcon>
 									{' '}
-									<NotesIcon />{' '}
+									<MenuBookIcon />{' '}
 								</ListItemIcon>
-								<ListItemText primary="Stories" />
+								<ListItemText primary="My Story" />
 							</ListItem>
 
 							<ListItem button key="Account" onClick={this.loadAccountPage}>
@@ -192,8 +250,7 @@ class home extends Component {
 							</ListItem>
 						</List>
 					</Drawer>
-
-					<div>{this.state.render ? <Account /> : <Stories />}</div>
+					<div>{this.renderSwitch(this.state.render)}</div>
 				</div>
 			);
 		}

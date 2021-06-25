@@ -12,6 +12,7 @@ exports.getAllStories = (request, response) => {
 			data.forEach((doc) => {
 				stories.push({
                     storyId: doc.id,
+                    userName: doc.data().userName,
                     title: doc.data().title,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
@@ -37,6 +38,7 @@ exports.getMyStories = (request, response) => {
 				stories.push({
                     storyId: doc.id,
                     title: doc.data().title,
+                    userName: doc.data().userName,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
 				});
@@ -60,6 +62,7 @@ exports.getOneStory = (request, response) => {
             } else {
                 story.push({
                     storyId: doc.id,
+                    userName: doc.data().userName,
                     title: doc.data().title,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
