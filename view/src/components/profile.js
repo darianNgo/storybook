@@ -60,8 +60,7 @@ class profile extends Component {
         const { classes, ...rest } = this.props;
         if (this.state.uiLoading === true) {
             return (
-                <main>
-                    className={classes.content}>
+                <main className={classes.content}>
 					<div className={classes.toolbar} />
 					{this.state.uiLoading && <CircularProgress size={150} className={classes.uiProgess} />}
                 </main>
