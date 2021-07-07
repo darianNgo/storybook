@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+import Profile from '../components/profile';
 import Account from '../components/account';
-import Stories from '../components/stories';
+import Srories from '../components/stories';
 import Explore from '../components/explore';
 
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -10,6 +11,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
+import Grid from '@material-ui/core/Grid';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -54,12 +56,15 @@ const styles = (theme) => ({
 		flexGrow: 1,
 		padding: theme.spacing(3)
 	},
+	usernameStyle: {
+		marginTop: theme.spacing(10)
+	},
 	avatar: {
-		height: 100,
-		width: 100,
+		height: 150,
+		width: 150,
 		flexShrink: 0,
 		flexGrow: 0,
-		marginTop: 20
+		marginTop: theme.spacing(12)
 	},
 	uiProgess: {
 		position: 'fixed',
@@ -108,13 +113,13 @@ class home extends Component {
 	renderSwitch(page) {
 		switch(page) {
 			case 0:
-				return <Stories/>;
+				return <Profile/>;
 			case 1:
 				return <Account/>
 			case 2:
 				return <Explore />
 			default: 
-				return <Stories />
+				return <Profile />
 		}
 	}  
 
@@ -217,15 +222,14 @@ class home extends Component {
 						</IconButton>
 						<Divider />
 						<center>
-							<Avatar src={this.state.profilePicture} className={classes.avatar} />
 							<p>
 								{' '}
-								{this.state.firstName} {this.state.lastName}
+								<Typography variant='h5'>{this.state.firstName} {this.state.lastName}</Typography>
 							</p>
 						</center>
 						<Divider />
 						<List>
-							<ListItem button key="Stories" onClick={this.loadStoryPage}>
+							<ListItem button key="Profile" onClick={this.loadStoryPage}>
 								<ListItemIcon>
 									{' '}
 									<MenuBookIcon />{' '}
@@ -250,7 +254,7 @@ class home extends Component {
 							</ListItem>
 						</List>
 					</Drawer>
-					<div>{this.renderSwitch(this.state.render)}</div>
+							<div>{this.renderSwitch(this.state.render)}</div>
 				</div>
 			);
 		}

@@ -311,7 +311,7 @@ class exploreStories extends Component {
 											{story.title}
 										</Typography>
 										<Typography>
-											Username Here
+											username here
 										</Typography>
 										<Typography className={classes.pos} color="textSecondary">
 											{dayjs(story.createdAt).fromNow()}
