@@ -3,15 +3,20 @@ import axios from 'axios';
 
 import Profile from '../components/profile';
 import Account from '../components/account';
-import Srories from '../components/stories';
 import Explore from '../components/explore';
 
-import DeleteIcon from '@material-ui/icons/Delete';
+
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import SearchIcon from '@material-ui/icons/Search';
 
-import Grid from '@material-ui/core/Grid';
+import Menu from '@material-ui/core/Menu';
+import Fade from '@material-ui/core/Fade';
+import { alpha } from '@material-ui/core/styles';
+import MenuItem from '@material-ui/core/MenuItem'
+import { TextField } from '@material-ui/core';
+
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -25,16 +30,20 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import NotesIcon from '@material-ui/icons/Notes';
-import Avatar from '@material-ui/core/avatar';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
-
-
-
 import { authMiddleWare } from '../util/auth'
 // import { response } from 'express';
+
+const FAKE_USER_LIST = [
+    'papiTheToyPoodle',
+    'piapia',
+    'leoTheCrazyCat',
+    'miaThePitBull',
+	'MrWiskerz',
+]
+
 
 const drawerWidth = 240;
 
@@ -74,8 +83,87 @@ const styles = (theme) => ({
 		left: '50%',
 		top: '35%'
 	},
-	toolbar: theme.mixins.toolbar
+	searchBar: {
+		height: 30,
+	},
+	margin: {
+		margin: theme.spacing(1)
+	},
+	inputText: {
+		color: 'white',
+		textAlign: 'center',
+	},
+	search: {
+		position: 'relative',
+		borderRadius: theme.shape.borderRadius,
+		backgroundColor: alpha(theme.palette.common.white, 0.15),
+		'&:hover': {
+		  backgroundColor: alpha(theme.palette.common.white, 0.25),
+		},
+		marginLeft: 0,
+		width: '100%',
+		[theme.breakpoints.up('sm')]: {
+		  marginLeft: theme.spacing(1),
+		  width: 'auto',
+		},
+	  },
+	  searchIcon: {
+		padding: theme.spacing(0, 2),
+		height: '100%',
+		position: 'absolute',
+		pointerEvents: 'none',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+	  },
+	  inputRoot: {
+		color: 'inherit',
+	  },
+	  inputInput: {
+		padding: theme.spacing(1, 1, 1, 0),
+		// vertical padding + font size from searchIcon
+		paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+		transition: theme.transitions.create('width'),
+		width: '100%',
+		[theme.breakpoints.up('sm')]: {
+		  width: '12ch',
+		  '&:focus': {
+			width: '20ch',
+		  },
+		},
+	  },
 });
+
+const StyledMenu = withStyles({
+	paper: {
+	  border: '1px solid #d3d4d5',
+	},
+  })((props) => (
+	<Menu
+	  elevation={0}
+	  getContentAnchorEl={null}
+	  anchorOrigin={{
+		vertical: 'bottom',
+		horizontal: 'center',
+	  }}
+	  transformOrigin={{
+		vertical: 'top',
+		horizontal: 'center',
+	  }}
+	  {...props}
+	/>
+  ));
+
+  const StyledMenuItem = withStyles((theme) => ({
+	root: {
+	  '&:focus': {
+		backgroundColor: theme.palette.primary.main,
+		'& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+		  color: theme.palette.common.white,
+		},
+	  },
+	},
+}))(MenuItem);
 
 class home extends Component {
     state = {
@@ -110,6 +198,8 @@ class home extends Component {
         this.props.history.push('/login');
     };
 
+
+
 	renderSwitch(page) {
 		switch(page) {
 			case 0:
@@ -135,7 +225,12 @@ class home extends Component {
             lastName: '',
             profilePicture: '',
             uiLoading: true,
-            imageLoading: false
+            imageLoading: false,
+			userInput: '',
+            userOptions: FAKE_USER_LIST,
+            userMenuVisable: false,
+            userChosen: '',
+			userInputError: '',
         };
     }
 
@@ -167,7 +262,73 @@ class home extends Component {
             });
     };
 
+	componentDidUpdate = (prevProps, prevInput) => {
+		console.log(prevInput.userInput)
+		console.log(this.state.userInput)
+		if (prevInput.userInput !== this.state.userInput && this.state.userInput !== '') {
+			console.log('matching')
+			let userOptions = [];
+			for (var u in FAKE_USER_LIST) {
+				userOptions.push(FAKE_USER_LIST[u]);
+			}
+			this.setState({ userOptions });
+		}
+	}
+
+
+	searchSorter = (username) => {
+		console.log(username.substring(0, this.state.userInput.length))
+
+		if ((username.substring(0, this.state.userInput.length) === this.state.userInput) && (this.state.userInput !== '')) {
+			return (
+				<MenuItem
+				value={username}
+				key={username}
+				color="primary"
+				onClick={(event) => {
+					this.setState((state) => {
+						return {
+							userMenuVisable: state.userChosen.length > 0 ? false : this.state.userMenuVisable,
+							userInput: state.userChosen.length > 0 ? '' : this.state.userInput,
+							userInputError: ''
+						}
+					});
+					this.setState((state) => {
+						return {
+							userChosen: state.userChosen.concat(username)
+						}
+					});
+				}}
+				>
+				{username}
+				</MenuItem>
+			)
+		}
+	}
+
+	getUserOptions = () => {
+		console.log('getUserOptions')
+		if (this.state.userOptions.length === 0) {
+			console.log('no user found')
+			return (
+				<MenuItem
+				color='primary'
+				disabled
+				>
+				no user found
+				</MenuItem>
+			)
+		}
+		return (
+			this.state.userOptions.map(u => {
+				const chosen = this.state.userChosen.includes(u);
+				return this.searchSorter(u)
+			})
+		)
+	}
+
     render() {
+		const disableUserInput = this.state.userChosen.lenth > 0;
 		const { classes } = this.props;		
 		if (this.state.uiLoading === true) {
 			return (
@@ -200,6 +361,37 @@ class home extends Component {
 								onClick={this.loadExplorePage}>
 								Explore
 							</Button>
+							<div id='search-wrapper'>
+								{/* <div className={classes.searchIcon}>
+								<SearchIcon />
+								</div> */}
+								<TextField
+									placeholder="Search…"
+									type='text'
+									error={Boolean(this.state.userInputError)}
+									value={this.state.userInput}
+									disabled={disableUserInput}
+									onChange={(event) => {
+										this.setState({
+											userInput: event.target.value,
+											userInputError: ""
+										})
+									}}
+									onClick={(event) => { !disableUserInput && this.setState({ userMenuVisible: true }) }}
+									classes={{
+										root: 'user-filter-root',
+										input: 'user-filter-input',
+									}}
+									inputProps={{ 
+										classname: disableUserInput ? 'disabledUserInput' : ''
+									 }}
+								/>
+								{this.state.userMenuVisible &&
+									<div id= 'user-menu'>
+										{this.getUserOptions()}
+									</div>
+								}
+							</div>
 						</Toolbar>
 					</AppBar>
 					<Drawer
