@@ -8,6 +8,7 @@ const auth = require('./util/auth');
 const {
     getAllStories,
     getMyStories,
+    getUserChosenStories,
     getOneStory,
     postOneStory,
     deleteStory,
@@ -19,13 +20,16 @@ const {
     signUpUser,
     uploadProfilePhoto,
     getUserDetail,
-    updateUserDetails
+    getUserChosenDetail,
+    updateUserDetails,
+    getAllUsernamesByQuery
 } = require('./APIs/users')
 
 
 // stories.js
 app.get('/stories', getAllStories);
 app.get('/stories/user', auth, getMyStories);
+app.get('/stories/:userName', auth, getMyStories);
 app.get('/story/:storyId', auth, getOneStory);
 app.post('/story', auth, postOneStory);
 app.delete('/story/:storyId', auth, deleteStory);
@@ -38,7 +42,9 @@ app.put('/story/:storyId', auth, editStory);
 app.post('/login', loginUser);
 app.post('/signup', signUpUser);
 app.post('/user/image', auth, uploadProfilePhoto);
+app.get('/user/userNames/:userName', auth, getAllUsernamesByQuery);
 app.get('/user', auth, getUserDetail);
+app.get('/user/:userName', auth, getUserChosenDetail);
 app.post('/user', auth, updateUserDetails);
 
 

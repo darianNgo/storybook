@@ -139,7 +139,7 @@ class exploreStories extends Component {
 	handleViewOpen(data) {
 		this.setState({
 			title: data.story.title,
-			userName: data.story.userName,
+			userName: data.story.username,
 			body: data.story.body,
 			viewOpen: true
 		});
@@ -311,7 +311,7 @@ class exploreStories extends Component {
 											{story.title}
 										</Typography>
 										<Typography>
-											username here
+											{story.userName}
 										</Typography>
 										<Typography className={classes.pos} color="textSecondary">
 											{dayjs(story.createdAt).fromNow()}

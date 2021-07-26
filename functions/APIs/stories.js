@@ -12,7 +12,7 @@ exports.getAllStories = (request, response) => {
 			data.forEach((doc) => {
 				stories.push({
                     storyId: doc.id,
-                    userName: doc.data().userName,
+                    userName: doc.data().username,
                     title: doc.data().title,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
@@ -38,7 +38,32 @@ exports.getMyStories = (request, response) => {
 				stories.push({
                     storyId: doc.id,
                     title: doc.data().title,
-                    userName: doc.data().userName,
+                    userName: doc.data().username,
+					body: doc.data().body,
+					createdAt: doc.data().createdAt,
+				});
+			});
+			return response.json(stories);
+		})
+		.catch((err) => {
+			console.error(err);
+			return response.status(500).json({ error: err.code});
+		});
+};
+
+exports.getUserChosenStories = (request, response) => {
+	db
+		.collection('stories')
+        .where('username', '==', request.user.username)
+		.orderBy('createdAt', 'desc')
+		.get()
+		.then((data) => {
+			let stories = [];
+			data.forEach((doc) => {
+				stories.push({
+                    storyId: doc.id,
+                    title: doc.data().title,
+                    userName: doc.data().username,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
 				});
@@ -62,7 +87,7 @@ exports.getOneStory = (request, response) => {
             } else {
                 story.push({
                     storyId: doc.id,
-                    userName: doc.data().userName,
+                    userName: doc.data().username,
                     title: doc.data().title,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,

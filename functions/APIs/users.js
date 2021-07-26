@@ -183,6 +183,47 @@ exports.getUserDetail = (request, response) => {
 		});
 }
 
+exports.getUserChosenDetail = (request, response) => {
+    let userData = {};
+	db
+		.doc(`/users/${request.user.username}`)
+		.get()
+		.then((doc) => {
+			if (doc.exists) {
+                userData.userCredentials = doc.data();
+                return response.json(userData);
+			}	
+		})
+		.catch((error) => {
+			console.error(error);
+			return response.status(500).json({ error: error.code });
+		});
+}
+
+// get usernames by query
+exports.getAllUsernamesByQuery = (request, response) => {
+    console.log('testing')
+	db
+		.collection('users')
+		.get()
+		.then((data) => {
+			let userNames = [];
+			data.forEach((user) => {
+                if (user.data().username.includes(request.params.userName)) {
+                    userNames.push({
+                        userName: user.data().username,
+                    });
+                }
+			});
+			return response.json(userNames);
+		})
+		.catch((err) => {
+			console.error(err);
+			return response.status(500).json({ error: err.code});
+		});
+};
+
+
 // update user details
 exports.updateUserDetails = (request, response) => {
     let document = db.collection('users').doc(`${request.user.username}`);

@@ -37,11 +37,11 @@ import { authMiddleWare } from '../util/auth'
 // import { response } from 'express';
 
 const FAKE_USER_LIST = [
-    'papiTheToyPoodle',
-    'piapia',
-    'leoTheCrazyCat',
-    'miaThePitBull',
-	'MrWiskerz',
+    'papiTheToyPoodle'
+    // 'piapia',
+    // 'leoTheCrazyCat',
+    // 'miaThePitBull',
+	// 'MrWiskerz',
 ]
 
 
@@ -229,7 +229,10 @@ class home extends Component {
 			userInput: '',
             userOptions: FAKE_USER_LIST,
             userMenuVisable: false,
+			viewingUserChosenProfile: false,
             userChosen: '',
+			userChosenProfilePicture: '',
+			userChosenStories: '',
 			userInputError: '',
         };
     }
@@ -265,14 +268,57 @@ class home extends Component {
 	componentDidUpdate = (prevProps, prevInput) => {
 		console.log(prevInput.userInput)
 		console.log(this.state.userInput)
+
 		if (prevInput.userInput !== this.state.userInput && this.state.userInput !== '') {
-			console.log('matching')
-			let userOptions = [];
-			for (var u in FAKE_USER_LIST) {
-				userOptions.push(FAKE_USER_LIST[u]);
-			}
-			this.setState({ userOptions });
+			authMiddleWare(this.props.history);
+			const authToken = localStorage.getItem('AuthToken');
+			axios.defaults.headers.common = {Authorization: `${authToken}`};
+			axios
+				.get(`/user/userNames/${this.state.userInput}`)
+				.then((response) => {
+					let userOptions = [];
+					for (var u in response.data) {
+						userOptions.push(response.data[u].userName);
+					}
+					this.setState({ userOptions });
+				})
+				.catch((error) => {
+					console.log(error.response);
+					let userOptions = [];
+					for (var u in FAKE_USER_LIST) {
+						userOptions.push(FAKE_USER_LIST[u]);
+					}
+					this.setState({ userOptions });
+				});
 		}
+
+		if (this.state.userChosen !== '') {
+			console.log(this.state.userChosen)
+			return this.loadChosenProfile
+		}
+	}
+
+	loadChosenProfile = () => {
+		authMiddleWare(this.props.history);
+        const authToken = localStorage.getItem('AuthToken');
+        axios.defaults.headers.common = {Authorization: `${authToken}`};
+        axios
+            .get('/user')
+            .then((response) => {
+                console.log(response.data);
+                this.setState({
+					userChosen: '',
+					userChosenProfilePicture: '',
+					userChosenStories: '',
+                });   
+            })
+            .catch((error) => {
+                if (error.response.status === 403) {
+                    this.props.history.push('/login')
+                }
+                console.log(error);
+                this.setState({ errorMsg: 'Error in retrieving the data'});
+            });
 	}
 
 
@@ -295,7 +341,7 @@ class home extends Component {
 					});
 					this.setState((state) => {
 						return {
-							userChosen: state.userChosen.concat(username)
+							userChosen: username
 						}
 					});
 				}}
@@ -321,7 +367,7 @@ class home extends Component {
 		}
 		return (
 			this.state.userOptions.map(u => {
-				const chosen = this.state.userChosen.includes(u);
+				// const chosen = this.state.userChosen.includes(u);
 				return this.searchSorter(u)
 			})
 		)
@@ -351,11 +397,6 @@ class home extends Component {
 							<Typography variant="h6" noWrap>
 								StoryBook
 							</Typography>
-							<Button 
-								color="inherit"
-								onClick={this.loadStoryPage}>
-								Home
-							</Button>
 							<Button 
 								color="inherit"
 								onClick={this.loadExplorePage}>
