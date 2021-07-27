@@ -11,12 +11,14 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SearchIcon from '@material-ui/icons/Search';
 
+import Avatar from '@material-ui/core/avatar';
 import Menu from '@material-ui/core/Menu';
 import Fade from '@material-ui/core/Fade';
 import { alpha } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem'
 import { TextField } from '@material-ui/core';
 
+import Grid from '@material-ui/core/Grid';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -193,6 +195,10 @@ class home extends Component {
 		this.setState({render: 2})
 	};
 
+	loadUserChosenProfilePage = (event) => {
+		this.setState({render: 3})
+	};
+
     logoutHandler = (event) => {
         localStorage.removeItem('AuthToken');
         this.props.history.push('/login');
@@ -208,6 +214,8 @@ class home extends Component {
 				return <Account/>
 			case 2:
 				return <Explore />
+			case 3:
+				return this.renderUserChosenProfile()
 			default: 
 				return <Profile />
 		}
@@ -296,6 +304,7 @@ class home extends Component {
 			console.log(this.state.userChosen)
 			this.loadUserChosenInfo()
 			this.loadUserChosenStories()
+			this.loadUserChosenProfilePage()
 		}
 	}
 
@@ -386,6 +395,43 @@ class home extends Component {
 				return this.searchSorter(u)
 			})
 		)
+	}
+
+	renderUserChosenProfile = () => {
+		const { classes, ...rest } = this.props;
+        if (this.state.uiLoading === true) {
+            return (
+                <main className={classes.content}>
+					<div className={classes.toolbar} />
+					{this.state.uiLoading && <CircularProgress size={150} className={classes.uiProgess} />}
+                </main>
+            );
+        } else {
+            return (
+                <Grid spacing={2}>
+                            <Grid
+                                item
+                                container
+                                className={classes.centerColumn}
+                                display="flex"
+                                justify="center"
+                                >
+                                <Avatar src={this.state.userChosenProfilePicture} className={classes.avatar} />
+                            </Grid>
+                            <Grid
+                                item
+                                container
+                                className={classes.centerColumn}
+                                display="flex"
+                                justify="center"
+                                >
+                                <Typography variant='h4'>{this.state.userChosen}</Typography>
+                            </Grid>
+							{/* make stories able to take a parameter and then use it here with userchosen's stories */}
+                                {/* <Stories/> */} 
+                        </Grid>
+            );
+        }
 	}
 
     render() {
