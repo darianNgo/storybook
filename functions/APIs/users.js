@@ -186,11 +186,12 @@ exports.getUserDetail = (request, response) => {
 exports.getUserChosenDetail = (request, response) => {
     let userData = {};
 	db
-		.doc(`/users/${request.user.username}`)
+		.doc(`/users/${request.params.userName}`)
 		.get()
 		.then((doc) => {
 			if (doc.exists) {
                 userData.userCredentials = doc.data();
+                console.log(response.json(userData))
                 return response.json(userData);
 			}	
 		})
@@ -199,6 +200,7 @@ exports.getUserChosenDetail = (request, response) => {
 			return response.status(500).json({ error: error.code });
 		});
 }
+
 
 // get usernames by query
 exports.getAllUsernamesByQuery = (request, response) => {

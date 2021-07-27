@@ -29,7 +29,7 @@ const {
 // stories.js
 app.get('/stories', getAllStories);
 app.get('/stories/user', auth, getMyStories);
-app.get('/stories/:userName', auth, getMyStories);
+app.get('/stories/:userName', getUserChosenStories);
 app.get('/story/:storyId', auth, getOneStory);
 app.post('/story', auth, postOneStory);
 app.delete('/story/:storyId', auth, deleteStory);
@@ -44,7 +44,7 @@ app.post('/signup', signUpUser);
 app.post('/user/image', auth, uploadProfilePhoto);
 app.get('/user/userNames/:userName', auth, getAllUsernamesByQuery);
 app.get('/user', auth, getUserDetail);
-app.get('/user/:userName', auth, getUserChosenDetail);
+app.get('/user/:userName',  getUserChosenDetail);
 app.post('/user', auth, updateUserDetails);
 
 

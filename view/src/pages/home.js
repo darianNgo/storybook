@@ -292,33 +292,48 @@ class home extends Component {
 				});
 		}
 
-		if (this.state.userChosen !== '') {
+		if (this.state.userChosen !== '' && prevInput.userInput !== this.state.userInput) {
 			console.log(this.state.userChosen)
-			return this.loadChosenProfile
+			this.loadUserChosenInfo()
+			this.loadUserChosenStories()
 		}
 	}
 
-	loadChosenProfile = () => {
+	loadUserChosenInfo = () => {
 		authMiddleWare(this.props.history);
         const authToken = localStorage.getItem('AuthToken');
         axios.defaults.headers.common = {Authorization: `${authToken}`};
         axios
-            .get('/user')
+            .get(`user/${this.state.userChosen}`)
             .then((response) => {
                 console.log(response.data);
                 this.setState({
-					userChosen: '',
-					userChosenProfilePicture: '',
-					userChosenStories: '',
+					userChosenProfilePicture: response.date.userCredentials.profilePicture,
                 });   
             })
             .catch((error) => {
-                if (error.response.status === 403) {
-                    this.props.history.push('/login')
-                }
                 console.log(error);
                 this.setState({ errorMsg: 'Error in retrieving the data'});
             });
+	}
+
+
+	loadUserChosenStories = () => {
+		authMiddleWare(this.props.history);
+		const authToken = localStorage.getItem('AuthToken');
+		axios.defaults.headers.common = { Authorization: `${authToken}` };
+		axios
+			.get(`/stories/${this.state.userChosen}`)
+			.then((response) => {
+				this.setState({
+					userChosenStories: response.data,
+				});
+				console.log('loadUserChosenStories')
+				console.log(response.data)
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 
 

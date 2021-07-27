@@ -54,7 +54,7 @@ exports.getMyStories = (request, response) => {
 exports.getUserChosenStories = (request, response) => {
 	db
 		.collection('stories')
-        .where('username', '==', request.user.username)
+        .where('username', '==', request.params.userName)
 		.orderBy('createdAt', 'desc')
 		.get()
 		.then((data) => {
@@ -68,6 +68,7 @@ exports.getUserChosenStories = (request, response) => {
 					createdAt: doc.data().createdAt,
 				});
 			});
+            console.log(response.json(stories))
 			return response.json(stories);
 		})
 		.catch((err) => {
