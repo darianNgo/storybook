@@ -4,6 +4,7 @@ import axios from 'axios';
 import Profile from '../components/profile';
 import Account from '../components/account';
 import Explore from '../components/explore';
+import Stories from '../components/stories';
 
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -428,7 +429,7 @@ class home extends Component {
                                 <Typography variant='h4'>{this.state.userChosen}</Typography>
                             </Grid>
 							{/* make stories able to take a parameter and then use it here with userchosen's stories */}
-                                {/* <Stories/> */} 
+                                <Stories stories={this.state.userChosenStories} isEditable={false}></Stories> 
                         </Grid>
             );
         }

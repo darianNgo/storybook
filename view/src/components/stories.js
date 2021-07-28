@@ -116,6 +116,7 @@ class stories extends Component {
 			uiLoading: true,
 			buttonType: '',
 			viewOpen: false,
+            isEditable: true,
 		};
 
 		this.deleteStoryHandler = this.deleteStoryHandler.bind(this);
@@ -178,6 +179,26 @@ class stories extends Component {
 			viewOpen: true
 		});
 	}
+
+    checkAccessForEditable = (story, editable) => {
+        if (editable === true) {
+            return (
+                <div>
+                <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ story })}>
+                Edit
+                </Button>
+                 <Button size="small" color="primary" onClick={() => this.deleteStoryHandler({ story })}>
+                Delete
+             </Button> 
+                </div>
+
+            );
+        }
+    }
+
+    // changeEditableStatus = (status) => {
+    //     if (status === false) this.setState({ isEditable: false}) : this.setState({ isEditable: true});  
+    // }
 
 	render() {
 		const DialogTitle = withStyles(styles)((props) => {
@@ -336,12 +357,15 @@ class stories extends Component {
 					</Dialog>
 
 					<Grid container spacing={2}>
-						{this.state.stories.map((story) => (
+						{this.props.stories.map((story) => (
 							<Grid item xs={12} sm={6}>
 								<Card className={classes.root} variant="outlined">
 									<CardContent>
 										<Typography variant="h5" component="h2">
 											{story.title}
+										</Typography>
+                                        <Typography>
+											{story.userName}
 										</Typography>
 										<Typography className={classes.pos} color="textSecondary">
 											{dayjs(story.createdAt).fromNow()}
@@ -350,18 +374,13 @@ class stories extends Component {
 											{`${story.body.substring(0, 65)}`}
 										</Typography>
 									</CardContent>
-									<CardActions>
-										<Button size="small" color="primary" onClick={() => this.handleViewOpen({ story })}>
-											{' '}
-											View{' '}
-										</Button>
-										<Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ story })}>
-											Edit
-										</Button>
-										<Button size="small" color="primary" onClick={() => this.deleteStoryHandler({ story })}>
-											Delete
-										</Button>
-									</CardActions>
+                                    <CardActions>
+                                        <Button size="small" color="primary" onClick={() => this.handleViewOpen({ story })}>
+                                            {' '}
+                                            View{' '}
+                                        </Button>
+                                        {this.checkAccessForEditable(story, this.props.isEditable)}
+                                    </CardActions>
 								</Card>
 							</Grid>
 						))}
@@ -400,33 +419,3 @@ class stories extends Component {
 }
 
 export default (withStyles(styles)(stories));
-
-// import React, { Component } from 'react'
-
-// import withStyles from '@material-ui/core/styles/withStyles';
-// import Typography from '@material-ui/core/Typography';
-
-// const styles = ((theme) => ({
-//     content: {
-//         flexGrow: 1,
-//         padding: theme.spacing(3),
-//     },
-//     toolbar: theme.mixins.toolbar,
-//     })
-// );
-
-// class stories extends Component {
-//     render() {
-//         const { classes } = this.props;
-//         return (
-//             <main className={classes.content}>
-//             <div className={classes.toolbar} />
-//             <Typography paragraph>
-//                 Hello I am stories
-//             </Typography>
-//             </main>
-//         )
-//     }
-// }
-
-// export default (withStyles(styles)(stories));

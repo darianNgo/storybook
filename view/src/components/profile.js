@@ -2,7 +2,7 @@
 import axios from "axios";
 import React, { Component } from 'react';
 import { authMiddleWare } from "../util/auth";
-import Stories from "./stories";
+import UserStories from "./userStories";
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -86,7 +86,7 @@ class profile extends Component {
                                 >
                                 <Typography variant='h4'>{this.state.username}</Typography>
                             </Grid>
-                                <Stories/>
+                                <UserStories/>
                         </Grid>
             );
         }

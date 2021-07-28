@@ -4,6 +4,7 @@ import Stories from './stories'
 import withStyles from '@material-ui/core/styles/withStyles';
 import Slide from '@material-ui/core/Slide';
 
+
 import axios from 'axios';
 import { authMiddleWare } from '../util/auth';
 
@@ -15,8 +16,11 @@ const styles = ((theme) => ({
     })
 );
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
 
-class exploreStories extends Component {
+class stories extends Component {
 	constructor(props) {
 		super(props);
 
@@ -24,7 +28,6 @@ class exploreStories extends Component {
 			stories: '',
 		};
 
-		this.handleViewOpen = this.handleViewOpen.bind(this);
 	}
 
 	handleChange = (event) => {
@@ -38,7 +41,7 @@ class exploreStories extends Component {
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/stories')
+			.get('/stories/user')
 			.then((response) => {
 				this.setState({
 					stories: response.data,
@@ -50,24 +53,11 @@ class exploreStories extends Component {
 			});
 	};
 
-	handleViewOpen(data) {
-		this.setState({
-			title: data.story.title,
-			userName: data.story.username,
-			body: data.story.body,
-			viewOpen: true
-		});
-	}
+
 
 	render() {
-		return (
-			<Stories
-				stories={this.state.stories}
-				isEditable={false}
-				>
-			</Stories>
-		);
+		return <Stories stories={this.state.stories} isEditable={true}></Stories>
 	}
 }
 
-export default (withStyles(styles)(exploreStories));
+export default (withStyles(styles)(stories));
