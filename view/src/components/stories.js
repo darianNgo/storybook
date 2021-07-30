@@ -196,9 +196,23 @@ class stories extends Component {
         }
     }
 
-    // changeEditableStatus = (status) => {
-    //     if (status === false) this.setState({ isEditable: false}) : this.setState({ isEditable: true});  
+
+    checkAccessForInspiredBy = (story, editable) => {
+        if (editable === false) {
+            return (
+                <div id='inspiredByWrapper'>
+                    <Button size='small'color='primary' onClick={this.handleInspiredBy}>
+                        Inspired
+                    </Button>
+                </div>
+            );
+        }
+    }
+
+    // handleInspiredBy = () => {
+    //     return 
     // }
+
 
 	render() {
 		const DialogTitle = withStyles(styles)((props) => {
@@ -380,6 +394,7 @@ class stories extends Component {
                                             View{' '}
                                         </Button>
                                         {this.checkAccessForEditable(story, this.props.isEditable)}
+                                        {this.checkAccessForInspiredBy(story, this.props.isEditable)}
                                     </CardActions>
 								</Card>
 							</Grid>
