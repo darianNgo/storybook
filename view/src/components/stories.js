@@ -110,6 +110,7 @@ class stories extends Component {
 			stories: '',
 			title: '',
 			body: '',
+            inspiredByStory: {},
 			storyId: '',
 			errors: [],
 			open: false,
@@ -163,6 +164,7 @@ class stories extends Component {
 	}
 
 	handleEditClickOpen(data) {
+        // TODO: Add inspiredBy state here, it should link to that title
 		this.setState({
 			title: data.story.title,
 			body: data.story.body,
@@ -173,9 +175,11 @@ class stories extends Component {
 	}
 
 	handleViewOpen(data) {
+        console.log(data.story)
 		this.setState({
 			title: data.story.title,
 			body: data.story.body,
+            inspiredByStory: data.story.inspiredByStory,
 			viewOpen: true
 		});
 	}
@@ -201,7 +205,7 @@ class stories extends Component {
         if (editable === false) {
             return (
                 <div id='inspiredByWrapper'>
-                    <Button size='small'color='primary' onClick={this.handleInspiredBy}>
+                    <Button size='small'color='primary' onClick={() => this.handleClickOpenInspiredBy({ story })}>
                         Inspired
                     </Button>
                 </div>
@@ -209,9 +213,18 @@ class stories extends Component {
         }
     }
 
-    // handleInspiredBy = () => {
-    //     return 
-    // }
+    handleClickOpenInspiredBy = (story) => {
+        this.setState({
+            inspiredByStory: story.story,
+        });
+        this.setState({
+            storyId: '',
+            title: '',
+            body: '',
+            buttonType: '',
+            open: true,
+        });
+    };
 
 
 	render() {
@@ -240,6 +253,7 @@ class stories extends Component {
 		const { open, errors, viewOpen } = this.state;
 
 		const handleClickOpen = () => {
+            console.log('open')
 			this.setState({
 				storyId: '',
 				title: '',
@@ -252,9 +266,11 @@ class stories extends Component {
 		const handleSubmit = (event) => {
 			authMiddleWare(this.props.history);
 			event.preventDefault();
+            console.log("INSPIRED BY: " + this.state.inspiredByStory)
 			const userStory = {
 				title: this.state.title,
-				body: this.state.body
+				body: this.state.body,
+                inspiredByStory: this.state.inspiredByStory
 			};
 			let options = {};
 			if (this.state.buttonType === 'Edit') {
@@ -274,6 +290,7 @@ class stories extends Component {
 			axios.defaults.headers.common = { Authorization: `${authToken}` };
 			axios(options)
 				.then(() => {
+                    console.log('NOT GOOD')
 					this.setState({ open: false });
 					window.location.reload();
 				})
@@ -288,6 +305,7 @@ class stories extends Component {
 		};
 
 		const handleClose = (event) => {
+            console.log('NOT GOOD')
 			this.setState({ open: false });
 		};
 
@@ -299,6 +317,7 @@ class stories extends Component {
 				</main>
 			);
 		} else {
+            let inspiredByStoryTitle = this.state.inspiredByStory == null ? "" : "Inspired By: " + this.state.inspiredByStory.title
 			return (
 				<main className={classes.content}>
 					<div className={classes.toolbar} />
@@ -421,6 +440,20 @@ class stories extends Component {
 								rows={1}
 								rowsMax={25}
 								value={this.state.body}
+								InputProps={{
+									disableUnderline: true
+								}}
+							/>
+                            <TextField
+								fullWidth
+								id="storyDetails"
+								name="body"
+								multiline
+								readonly
+								rows={1}
+								rowsMax={25}
+                                // TODO: Provision the story after retrieving the story id and making a GET call for this story id
+								value={inspiredByStoryTitle}
 								InputProps={{
 									disableUnderline: true
 								}}

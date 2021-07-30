@@ -54,7 +54,6 @@ class stories extends Component {
 	};
 
 
-
 	render() {
 		return <Stories stories={this.state.stories} isEditable={true}></Stories>
 	}

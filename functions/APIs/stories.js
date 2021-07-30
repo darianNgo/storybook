@@ -16,6 +16,7 @@ exports.getAllStories = (request, response) => {
                     title: doc.data().title,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
+                    inspiredByStory: doc.data().inspiredByStory,
 				});
 			});
 			return response.json(stories);
@@ -41,6 +42,7 @@ exports.getMyStories = (request, response) => {
                     userName: doc.data().username,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
+                    inspiredByStory: doc.data().inspiredByStory,
 				});
 			});
 			return response.json(stories);
@@ -66,6 +68,8 @@ exports.getUserChosenStories = (request, response) => {
                     userName: doc.data().username,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
+                    inspiredByStory: doc.data().inspiredByStory
+                    //TODO: add linkage to a inspiredByStory, null if not provided
 				});
 			});
             console.log(response.json(stories))
@@ -92,6 +96,7 @@ exports.getOneStory = (request, response) => {
                     title: doc.data().title,
 					body: doc.data().body,
 					createdAt: doc.data().createdAt,
+                    inspiredByStory: doc.data().inspiredByStory,
                 })
                 return response.json(story);
             }
@@ -116,6 +121,7 @@ exports.postOneStory = (request, response) => {
         title: request.body.title,
         body: request.body.body,
         createdAt: new Date().toISOString(),
+        inspiredByStory: request.body.inspiredByStory,
     }
     db
         .collection('stories')
