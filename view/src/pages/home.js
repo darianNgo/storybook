@@ -310,6 +310,8 @@ class home extends Component {
 	}
 
 	loadUserChosenInfo = () => {
+		console.log("loadUserChosenInfo")
+		console.log(this.state.userChosenProfilePicture)
 		authMiddleWare(this.props.history);
         const authToken = localStorage.getItem('AuthToken');
         axios.defaults.headers.common = {Authorization: `${authToken}`};
@@ -318,13 +320,14 @@ class home extends Component {
             .then((response) => {
                 console.log(response.data);
                 this.setState({
-					userChosenProfilePicture: response.date.userCredentials.profilePicture,
+					userChosenProfilePicture: response.data.userCredentials.imageUrl,
                 });   
             })
             .catch((error) => {
                 console.log(error);
                 this.setState({ errorMsg: 'Error in retrieving the data'});
             });
+			 console.log(this.state.userChosenProfilePicture)
 	}
 
 

@@ -196,6 +196,7 @@ exports.getUserChosenDetail = (request, response) => {
 			}	
 		})
 		.catch((error) => {
+            console.log('Could not retrieve userChosen profile picture')
 			console.error(error);
 			return response.status(500).json({ error: error.code });
 		});

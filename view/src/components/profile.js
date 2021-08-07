@@ -34,6 +34,7 @@ class profile extends Component {
     }
 
 	componentWillMount = () => {
+        console.log(this.state.profilePicture)
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
@@ -54,6 +55,7 @@ class profile extends Component {
 				console.log(error);
 				this.setState({ errorMsg: 'Error in retrieving the data' });
 			});
+            console.log(this.state.profilePicture)
 	};
 
     render() {

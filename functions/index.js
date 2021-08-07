@@ -44,7 +44,7 @@ app.post('/signup', signUpUser);
 app.post('/user/image', auth, uploadProfilePhoto);
 app.get('/user/userNames/:userName', auth, getAllUsernamesByQuery);
 app.get('/user', auth, getUserDetail);
-app.get('/user/:userName',  getUserChosenDetail);
+app.get('/user/:userName', auth, getUserChosenDetail);
 app.post('/user', auth, updateUserDetails);
 
 

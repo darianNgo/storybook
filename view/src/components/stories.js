@@ -118,6 +118,7 @@ class stories extends Component {
 			buttonType: '',
 			viewOpen: false,
             isEditable: true,
+			storiesAreMounted: true,
 		};
 
 		this.deleteStoryHandler = this.deleteStoryHandler.bind(this);
@@ -226,6 +227,44 @@ class stories extends Component {
         });
     };
 
+	// this opens the story that inpired the currently opened story
+	handleInspiredByStory = () => {
+		this.setState({
+			title: this.state.inspiredByStory.title,
+			body: this.state.inspiredByStory.body,
+			inspiredByStory: this.state.inspiredByStory.inspiredByStory
+		})
+	}
+
+	// this function renders a button to go into inspired story
+	// if current story displayed was inspired by another
+	renderButtonForInspiredBy = () => {
+		let inspiredByStoryTitle = 'Inspired by: ' + this.state.inspiredByStory.title
+		if (this.state.inspiredByStory.title !== undefined) {
+			console.log(this.state.inspiredByStory.title)
+			return (
+				<Button
+					fullWidth
+					id="storyDetails"
+					name="body"
+					color='primary'
+					multiline
+					readonly
+					rows={1}
+					rowsMax={25}
+					onClick={this.handleInspiredByStory}
+					InputProps={{
+						disableUnderline: true
+					}}
+				>
+				{inspiredByStoryTitle}
+				</Button>
+			)
+		} else {
+			console.log('there is no inspired by button')
+		}
+	}
+
 
 	render() {
 		const DialogTitle = withStyles(styles)((props) => {
@@ -309,6 +348,7 @@ class stories extends Component {
 			this.setState({ open: false });
 		};
 
+
 		if (this.state.uiLoading === true) {
 			return (
 				<main className={classes.content}>
@@ -317,151 +357,156 @@ class stories extends Component {
 				</main>
 			);
 		} else {
-            let inspiredByStoryTitle = this.state.inspiredByStory == null ? "" : "Inspired By: " + this.state.inspiredByStory.title
-			return (
-				<main className={classes.content}>
-					<div className={classes.toolbar} />
+			let mounted = true
+			if (mounted) {
+				return (
+					<main className={classes.content}>
+						<div className={classes.toolbar} />
 
-					<IconButton
-						className={classes.floatingButton}
-						color="primary"
-						aria-label="Add Story"
-						onClick={handleClickOpen}
-					>
-						<AddCircleIcon style={{ fontSize: 60 }} />
-					</IconButton>
-					<Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-						<AppBar className={classes.appBar}>
-							<Toolbar>
-								<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-									<CloseIcon />
-								</IconButton>
-								<Typography variant="h6" className={classes.title}>
-									{this.state.buttonType === 'Edit' ? 'Edit Story' : 'Create a new Story'}
-								</Typography>
-								<Button
-									autoFocus
-									color="inherit"
-									onClick={handleSubmit}
-									className={classes.submitButton}
+						<IconButton
+							className={classes.floatingButton}
+							color="primary"
+							aria-label="Add Story"
+							onClick={handleClickOpen}
+						>
+							<AddCircleIcon style={{ fontSize: 60 }} />
+						</IconButton>
+						<Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+							<AppBar className={classes.appBar}>
+								<Toolbar>
+									<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+										<CloseIcon />
+									</IconButton>
+									<Typography variant="h6" className={classes.title}>
+										{this.state.buttonType === 'Edit' ? 'Edit Story' : 'Create a new Story'}
+									</Typography>
+									<Button
+										autoFocus
+										color="inherit"
+										onClick={handleSubmit}
+										className={classes.submitButton}
+									>
+										{this.state.buttonType === 'Edit' ? 'Save' : 'Submit'}
+									</Button>
+								</Toolbar>
+							</AppBar>
+
+							<form className={classes.form} noValidate>
+								<Grid container spacing={2} >
+									<Grid item xs={12}>
+										<TextField
+											variant="outlined"
+											required
+											fullWidth
+											id="storyTitle"
+											label="Story Title"
+											name="title"
+											autoComplete="storyTitle"
+											helperText={errors.title}
+											value={this.state.title}
+											error={errors.title ? true : false}
+											onChange={this.handleChange}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+										<TextField
+											variant="outlined"
+											required
+											fullWidth
+											id="storyDetails"
+											label="Story Details"
+											name="body"
+											autoComplete="storyDetails"
+											multiline
+											rows={25}
+											rowsMax={25}
+											helperText={errors.body}
+											error={errors.body ? true : false}
+											onChange={this.handleChange}
+											value={this.state.body}
+										/>
+									</Grid>
+								</Grid>
+							</form>
+						</Dialog>
+						<Grid container spacing={2}>
+							{this.props.stories.map((story) => (
+								<Grid item xs={12} sm={6}>
+									<Card className={classes.root} variant="outlined">
+										<CardContent>
+											<Typography variant="h5" component="h2">
+												{story.title}
+											</Typography>
+											<Typography>
+												{story.userName}
+											</Typography>
+											<Typography className={classes.pos} color="textSecondary">
+												{dayjs(story.createdAt).fromNow()}
+											</Typography>
+											<Typography variant="body2" component="p">
+												{`${story.body.substring(0, 65)}`}
+											</Typography>
+										</CardContent>
+										<CardActions>
+											<Button size="small" color="primary" onClick={() => this.handleViewOpen({ story })}>
+												{' '}
+												View{' '}
+											</Button>
+											{this.checkAccessForEditable(story, this.props.isEditable)}
+											{this.checkAccessForInspiredBy(story, this.props.isEditable)}
+										</CardActions>
+									</Card>
+								</Grid>
+							))}
+						</Grid>
+
+						<Dialog
+							onClose={handleViewClose}
+							aria-labelledby="customized-dialog-title"
+							open={viewOpen}
+							fullWidth
+							classes={{ paperFullWidth: classes.dialogeStyle }}
+						>
+							<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
+								{this.state.title}
+							</DialogTitle>
+							<DialogContent dividers>
+								<TextField
+									fullWidth
+									id="storyDetails"
+									name="body"
+									multiline
+									readonly
+									rows={1}
+									rowsMax={25}
+									value={this.state.body}
+									InputProps={{
+										disableUnderline: true
+									}}
+								/>
+								{/* <Button
+									fullWidth
+									id="storyDetails"
+									name="body"
+									color='primary'
+									multiline
+									readonly
+									rows={1}
+									rowsMax={25}
+									onClick={this.handleInspiredByStory}
+									InputProps={{
+										disableUnderline: true
+									}}
 								>
-									{this.state.buttonType === 'Edit' ? 'Save' : 'Submit'}
-								</Button>
-							</Toolbar>
-						</AppBar>
-
-						<form className={classes.form} noValidate>
-							<Grid container spacing={2} >
-								<Grid item xs={12}>
-									<TextField
-										variant="outlined"
-										required
-										fullWidth
-										id="storyTitle"
-										label="Story Title"
-										name="title"
-										autoComplete="storyTitle"
-										helperText={errors.title}
-										value={this.state.title}
-										error={errors.title ? true : false}
-										onChange={this.handleChange}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										variant="outlined"
-										required
-										fullWidth
-										id="storyDetails"
-										label="Story Details"
-										name="body"
-										autoComplete="storyDetails"
-										multiline
-										rows={25}
-										rowsMax={25}
-										helperText={errors.body}
-										error={errors.body ? true : false}
-										onChange={this.handleChange}
-										value={this.state.body}
-									/>
-								</Grid>
-							</Grid>
-						</form>
-					</Dialog>
-
-					<Grid container spacing={2}>
-						{this.props.stories.map((story) => (
-							<Grid item xs={12} sm={6}>
-								<Card className={classes.root} variant="outlined">
-									<CardContent>
-										<Typography variant="h5" component="h2">
-											{story.title}
-										</Typography>
-                                        <Typography>
-											{story.userName}
-										</Typography>
-										<Typography className={classes.pos} color="textSecondary">
-											{dayjs(story.createdAt).fromNow()}
-										</Typography>
-										<Typography variant="body2" component="p">
-											{`${story.body.substring(0, 65)}`}
-										</Typography>
-									</CardContent>
-                                    <CardActions>
-                                        <Button size="small" color="primary" onClick={() => this.handleViewOpen({ story })}>
-                                            {' '}
-                                            View{' '}
-                                        </Button>
-                                        {this.checkAccessForEditable(story, this.props.isEditable)}
-                                        {this.checkAccessForInspiredBy(story, this.props.isEditable)}
-                                    </CardActions>
-								</Card>
-							</Grid>
-						))}
-					</Grid>
-
-					<Dialog
-						onClose={handleViewClose}
-						aria-labelledby="customized-dialog-title"
-						open={viewOpen}
-						fullWidth
-						classes={{ paperFullWidth: classes.dialogeStyle }}
-					>
-						<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-							{this.state.title}
-						</DialogTitle>
-						<DialogContent dividers>
-							<TextField
-								fullWidth
-								id="storyDetails"
-								name="body"
-								multiline
-								readonly
-								rows={1}
-								rowsMax={25}
-								value={this.state.body}
-								InputProps={{
-									disableUnderline: true
-								}}
-							/>
-                            <TextField
-								fullWidth
-								id="storyDetails"
-								name="body"
-								multiline
-								readonly
-								rows={1}
-								rowsMax={25}
-                                // TODO: Provision the story after retrieving the story id and making a GET call for this story id
-								value={inspiredByStoryTitle}
-								InputProps={{
-									disableUnderline: true
-								}}
-							/>
-						</DialogContent>
-					</Dialog>
-				</main>
-			);
+								{inspiredByStoryTitle}
+								</Button> */}
+								{this.renderButtonForInspiredBy()}
+							</DialogContent>
+						</Dialog>
+					</main>
+				);
+			}
+			return () => mounted = false;
 		}
 	}
 }
