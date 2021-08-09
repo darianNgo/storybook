@@ -106,7 +106,6 @@ class stories extends Component {
 
 		this.state = {
 			username: '',
-			profilePicture: '',
 			stories: '',
 			title: '',
 			body: '',
@@ -118,7 +117,7 @@ class stories extends Component {
 			buttonType: '',
 			viewOpen: false,
             isEditable: true,
-			storiesAreMounted: true,
+			isMounting: false,
 		};
 
 		this.deleteStoryHandler = this.deleteStoryHandler.bind(this);
@@ -133,6 +132,21 @@ class stories extends Component {
 	};
 
 	componentWillMount = () => {
+
+		if (this.props.stories === 'explore') {
+			this.getExploreStories()
+		}
+
+		if (this.props.stories === 'user') {
+			this.getUserStories()
+		}
+
+		if (this.props.stories === 'userChosen') {
+			this.getUserChosenStories()
+		}
+	};
+
+	getUserStories = () => {
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
@@ -147,6 +161,42 @@ class stories extends Component {
 			.catch((err) => {
 				console.log(err);
 			});
+	};
+
+	getExploreStories = () => {
+		authMiddleWare(this.props.history);
+		const authToken = localStorage.getItem('AuthToken');
+		axios.defaults.headers.common = { Authorization: `${authToken}` };
+		axios
+			.get('/stories')
+			.then((response) => {
+					this.setState({
+						stories: response.data,
+						uiLoading: false
+					});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	getUserChosenStories = () => {
+		authMiddleWare(this.props.history);
+		const authToken = localStorage.getItem('AuthToken');
+		axios.defaults.headers.common = { Authorization: `${authToken}` };
+		axios
+			.get(`/stories/${this.props.userChosen}`)
+			.then((response) => {
+					this.setState({
+						stories: response.data,
+						uiLoading: false
+					});
+					console.log('loadUserChosenStories')
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+
 	};
 
 	deleteStoryHandler(data) {
@@ -239,8 +289,9 @@ class stories extends Component {
 	// this function renders a button to go into inspired story
 	// if current story displayed was inspired by another
 	renderButtonForInspiredBy = () => {
-		let inspiredByStoryTitle = 'Inspired by: ' + this.state.inspiredByStory.title
-		if (this.state.inspiredByStory.title !== undefined) {
+
+		if (this.state.inspiredByStory !== undefined && this.state.inspiredByStory.title !== undefined) {
+			let inspiredByStoryTitle = 'Inspired by: ' + this.state.inspiredByStory.title
 			console.log(this.state.inspiredByStory.title)
 			return (
 				<Button
@@ -263,6 +314,11 @@ class stories extends Component {
 		} else {
 			console.log('there is no inspired by button')
 		}
+	}
+
+	// handles the click on the username displayed on story
+	handleClickProfile = (username) => {
+		// TODO: make ability to go into the profile
 	}
 
 
@@ -357,8 +413,8 @@ class stories extends Component {
 				</main>
 			);
 		} else {
-			let mounted = true
-			if (mounted) {
+			// let mounted = true
+			// if (mounted) {
 				return (
 					<main className={classes.content}>
 						<div className={classes.toolbar} />
@@ -430,16 +486,20 @@ class stories extends Component {
 							</form>
 						</Dialog>
 						<Grid container spacing={2}>
-							{this.props.stories.map((story) => (
+							{this.state.stories.map((story) => (
 								<Grid item xs={12} sm={6}>
 									<Card className={classes.root} variant="outlined">
 										<CardContent>
 											<Typography variant="h5" component="h2">
 												{story.title}
 											</Typography>
-											<Typography>
+											<Button
+											color='primary'
+											style={{textTransform: 'none'}}
+											onClick={this.handleClickProfile}
+											>
 												{story.userName}
-											</Typography>
+											</Button>
 											<Typography className={classes.pos} color="textSecondary">
 												{dayjs(story.createdAt).fromNow()}
 											</Typography>
@@ -484,29 +544,13 @@ class stories extends Component {
 										disableUnderline: true
 									}}
 								/>
-								{/* <Button
-									fullWidth
-									id="storyDetails"
-									name="body"
-									color='primary'
-									multiline
-									readonly
-									rows={1}
-									rowsMax={25}
-									onClick={this.handleInspiredByStory}
-									InputProps={{
-										disableUnderline: true
-									}}
-								>
-								{inspiredByStoryTitle}
-								</Button> */}
 								{this.renderButtonForInspiredBy()}
 							</DialogContent>
 						</Dialog>
 					</main>
 				);
-			}
-			return () => mounted = false;
+			// }
+			// return () => mounted = false;
 		}
 	}
 }

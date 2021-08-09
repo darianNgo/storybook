@@ -3,18 +3,15 @@ import axios from 'axios';
 
 import Profile from '../components/profile';
 import Account from '../components/account';
-import Explore from '../components/explore';
 import Stories from '../components/stories';
 
 
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import SearchIcon from '@material-ui/icons/Search';
 
 import Avatar from '@material-ui/core/avatar';
 import Menu from '@material-ui/core/Menu';
-import Fade from '@material-ui/core/Fade';
 import { alpha } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem'
 import { TextField } from '@material-ui/core';
@@ -183,6 +180,9 @@ class home extends Component {
 	};
 
     loadAccountPage = (event) => {
+		if (this.state.render === 3) {
+			this.clearUserChosen()
+		}
         this.setState({render: 1})
 		this.closeDrawer()
     };
@@ -197,7 +197,9 @@ class home extends Component {
 	};
 
 	loadUserChosenProfilePage = (event) => {
-		this.setState({render: 3})
+		if (this.state.userChosen !== '') {
+			this.setState({render: 3, userInput: ''})
+		}
 	};
 
     logoutHandler = (event) => {
@@ -210,15 +212,15 @@ class home extends Component {
 	renderSwitch(page) {
 		switch(page) {
 			case 0:
-				return <Profile/>;
+				return <Profile isUserProfile={true} />
 			case 1:
 				return <Account/>
 			case 2:
-				return <Explore />
+				return <Stories stories='explore' isEditable={false}/>
 			case 3:
 				return this.renderUserChosenProfile()
 			default: 
-				return <Profile />
+				return <Profile isUserProfile={true} />
 		}
 	}  
 
@@ -304,9 +306,24 @@ class home extends Component {
 		if (this.state.userChosen !== '' && prevInput.userInput !== this.state.userInput) {
 			console.log(this.state.userChosen)
 			this.loadUserChosenInfo()
-			this.loadUserChosenStories()
 			this.loadUserChosenProfilePage()
 		}
+
+	}
+
+	// this clears the userChosen state when the state is not on ther 
+	// userChosen's profile
+	clearUserChosen = () => {
+		console.log('clearing userChosen state')
+		this.setState({
+			userChosen: ''
+		});
+
+		if (this.state.userChosen === '') {
+			console.log('user Chosen Cleared')
+		}
+
+		console.log(this.state.userChosen)
 	}
 
 	loadUserChosenInfo = () => {
@@ -342,7 +359,6 @@ class home extends Component {
 					userChosenStories: response.data,
 				});
 				console.log('loadUserChosenStories')
-				console.log(response.data)
 			})
 			.catch((err) => {
 				console.log(err);
@@ -432,7 +448,7 @@ class home extends Component {
                                 <Typography variant='h4'>{this.state.userChosen}</Typography>
                             </Grid>
 							{/* make stories able to take a parameter and then use it here with userchosen's stories */}
-                                <Stories stories={this.state.userChosenStories} isEditable={false}></Stories> 
+                                <Stories stories='userChosen' isEditable={false} userChosen={this.state.userChosen}></Stories> 
                         </Grid>
             );
         }
