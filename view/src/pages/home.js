@@ -180,9 +180,6 @@ class home extends Component {
 	};
 
     loadAccountPage = (event) => {
-		if (this.state.render === 3) {
-			this.clearUserChosen()
-		}
         this.setState({render: 1})
 		this.closeDrawer()
     };
@@ -198,7 +195,7 @@ class home extends Component {
 
 	loadUserChosenProfilePage = (event) => {
 		if (this.state.userChosen !== '') {
-			this.setState({render: 3, userInput: ''})
+			this.setState({render: 3})
 		}
 	};
 
@@ -212,14 +209,21 @@ class home extends Component {
 	renderSwitch(page) {
 		switch(page) {
 			case 0:
+				// this.clearUserChosen()
 				return <Profile isUserProfile={true} />
 			case 1:
+				// this.clearUserChosen()
 				return <Account/>
 			case 2:
+				// this.clearUserChosen()
+				if (this.state.userChosen !== '') {
+					this.clearUserChosen()
+				}
 				return <Stories stories='explore' isEditable={false}/>
 			case 3:
 				return this.renderUserChosenProfile()
 			default: 
+				// this.clearUserChosen()
 				return <Profile isUserProfile={true} />
 		}
 	}  
@@ -255,7 +259,6 @@ class home extends Component {
         axios
             .get('/user')
             .then((response) => {
-                console.log(response.data);
                 this.setState({
                     firstName: response.data.userCredentials.firstName,
                     lastName: response.data.userCredentials.lastName,
@@ -316,7 +319,9 @@ class home extends Component {
 	clearUserChosen = () => {
 		console.log('clearing userChosen state')
 		this.setState({
-			userChosen: ''
+			userChosen: '',
+			userChosenProfilePicture: '',
+			userChosenStories: ''
 		});
 
 		if (this.state.userChosen === '') {
@@ -327,42 +332,45 @@ class home extends Component {
 	}
 
 	loadUserChosenInfo = () => {
-		console.log("loadUserChosenInfo")
-		console.log(this.state.userChosenProfilePicture)
-		authMiddleWare(this.props.history);
-        const authToken = localStorage.getItem('AuthToken');
-        axios.defaults.headers.common = {Authorization: `${authToken}`};
-        axios
-            .get(`user/${this.state.userChosen}`)
-            .then((response) => {
-                console.log(response.data);
-                this.setState({
-					userChosenProfilePicture: response.data.userCredentials.imageUrl,
-                });   
-            })
-            .catch((error) => {
-                console.log(error);
-                this.setState({ errorMsg: 'Error in retrieving the data'});
-            });
-			 console.log(this.state.userChosenProfilePicture)
+		if (this.state.userChosen !== '') {
+			console.log("loadUserChosenInfo")
+			authMiddleWare(this.props.history);
+			const authToken = localStorage.getItem('AuthToken');
+			axios.defaults.headers.common = {Authorization: `${authToken}`};
+			axios
+				.get(`user/${this.state.userChosen}`)
+				.then((response) => {
+					console.log(response.data);
+					this.setState({
+						userChosenProfilePicture: response.data.userCredentials.imageUrl,
+					});   
+				})
+				.catch((error) => {
+					console.log(error);
+					this.setState({ errorMsg: 'Error in retrieving the data'});
+				});
+				console.log(this.state.userChosenProfilePicture)
+		}
 	}
 
 
 	loadUserChosenStories = () => {
-		authMiddleWare(this.props.history);
-		const authToken = localStorage.getItem('AuthToken');
-		axios.defaults.headers.common = { Authorization: `${authToken}` };
-		axios
-			.get(`/stories/${this.state.userChosen}`)
-			.then((response) => {
-				this.setState({
-					userChosenStories: response.data,
+		if (this.state.userChosen !== '') {
+			authMiddleWare(this.props.history);
+			const authToken = localStorage.getItem('AuthToken');
+			axios.defaults.headers.common = { Authorization: `${authToken}` };
+			axios
+				.get(`/stories/${this.state.userChosen}`)
+				.then((response) => {
+					this.setState({
+						userChosenStories: response.data,
+					});
+					console.log('loadUserChosenStories')
+				})
+				.catch((err) => {
+					console.log(err);
 				});
-				console.log('loadUserChosenStories')
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		}
 	}
 
 

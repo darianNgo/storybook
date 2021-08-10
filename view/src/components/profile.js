@@ -35,29 +35,13 @@ class profile extends Component {
     }
 
 	componentWillMount = () => {
-
-        // console.log(this.props.isUserProfile)
-
-        // if (this.props.isUserProfile === true) {
-        //     this.getUserInfo()
-        // }
-
-        // if (this.props.isUserProfile === false) {
-        //     this.getUserChosenInfo()
-        // }
-
-        // console.log('current profile selected: ' + this.state.username)
-        this.getUserInfo()
-	};
-
-    // this makes the api call to get the current users username and profile picture
-    getUserInfo = () => {
-        console.log("getUserInfo")
+        let displayedUser = this.props.isUserProfile ? '/user' : `/user/${this.props.userChosen}`
+        console.log("getUserInfo endpoint: " + displayedUser)
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/user')
+			.get(displayedUser)
 			.then((response) => {
 				console.log(response.data);
 				this.setState({
@@ -74,6 +58,32 @@ class profile extends Component {
 				this.setState({ errorMsg: 'Error in retrieving the data' });
 			});
 	};
+
+    // this makes the api call to get the current users username and profile picture
+    // getUserInfo = () => {
+    //     let displayedUser = this.props.isUserProfile ? '/user' : `/user/${this.props.userChosen}`
+    //     console.log("getUserInfo endpoint: " + displayedUser)
+	// 	authMiddleWare(this.props.history);
+	// 	const authToken = localStorage.getItem('AuthToken');
+	// 	axios.defaults.headers.common = { Authorization: `${authToken}` };
+	// 	axios
+	// 		.get(displayedUser)
+	// 		.then((response) => {
+	// 			console.log(response.data);
+	// 			this.setState({
+    //                 username: response.data.userCredentials.username,
+    //                 profilePicture: response.data.userCredentials.imageUrl,
+    //                 uiLoading: false
+	// 			});
+	// 		})
+	// 		.catch((error) => {
+	// 			if (error.response.status === 403) {
+	// 				this.props.history.push('/login');
+	// 			}
+	// 			console.log(error);
+	// 			this.setState({ errorMsg: 'Error in retrieving the data' });
+	// 		});
+	// };
 
     // this makes the api call to get the info of a chosen user
     // getUserChosenInfo = () => {
@@ -97,13 +107,13 @@ class profile extends Component {
     //         });
 	// }
 
-    // handleGetStories = () => {
-    //     if (this.props.isUserProfile) {
-    //         return <Stories stories='user' isEditable={true}></Stories>
-    //     } else {
-    //         return <Stories stories='userChosen' isEditable={false} userChosen={this.props.userChosen}></Stories>
-    //     }
-    // };
+    handleGetStories = () => {
+        if (this.props.isUserProfile) {
+            return <Stories stories='user' isEditable={true}></Stories>
+        } else {
+            return <Stories stories='userChosen' isEditable={false} userChosen={this.props.userChosen}></Stories>
+        }
+    };
 
     // handleGetProfilePicture = () => {
     //     if (this.props.isUserProfile) {
@@ -143,7 +153,8 @@ class profile extends Component {
                                 >
                                 <Typography variant='h4'>{this.state.username}</Typography>
                             </Grid>
-                            <Stories stories='user' isEditable={true}></Stories>
+                            {this.handleGetStories()}
+                            {/* <Stories stories='user' isEditable={true}></Stories> */}
                         </Grid>
             );
         }
