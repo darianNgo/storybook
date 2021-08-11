@@ -167,7 +167,7 @@ const StyledMenu = withStyles({
 
 class home extends Component {
     state = {
-        render: 0,
+        
 		drawer: false,
     };
 
@@ -180,21 +180,24 @@ class home extends Component {
 	};
 
     loadAccountPage = (event) => {
+		this.exitUserChosenProfile()
         this.setState({render: 1})
 		this.closeDrawer()
     };
 
     loadStoryPage = (event) => {
+		this.exitUserChosenProfile()
         this.setState({render: 0})
 		this.closeDrawer()
     };
 
 	loadExplorePage = (event) => {
+		this.exitUserChosenProfile()
 		this.setState({render: 2})
 	};
 
 	loadUserChosenProfilePage = (event) => {
-		if (this.state.userChosen !== '') {
+		if (this.state.userChosen !== '' && this.state.isViewingUserChosenProfile === true) {
 			this.setState({render: 3})
 		}
 	};
@@ -216,10 +219,10 @@ class home extends Component {
 				return <Account/>
 			case 2:
 				// this.clearUserChosen()
-				if (this.state.userChosen !== '') {
-					this.clearUserChosen()
-				}
-				return <Stories stories='explore' isEditable={false}/>
+				// if (this.state.userChosen !== '') {
+				// 	this.clearUserChosen()
+				// }
+				return <Stories stories='explore' isEditable={false} username={this.state.username}/>
 			case 3:
 				return this.renderUserChosenProfile()
 			default: 
@@ -236,6 +239,7 @@ class home extends Component {
         super(props);
 
         this.state = {
+			render: 0,
             firstName: '',
             lastName: '',
             profilePicture: '',
@@ -249,6 +253,7 @@ class home extends Component {
 			userChosenProfilePicture: '',
 			userChosenStories: '',
 			userInputError: '',
+			isViewingUserChosenProfile: false
         };
     }
 
@@ -306,12 +311,24 @@ class home extends Component {
 				});
 		}
 
-		if (this.state.userChosen !== '' && prevInput.userInput !== this.state.userInput) {
-			console.log(this.state.userChosen)
-			this.loadUserChosenInfo()
-			this.loadUserChosenProfilePage()
-		}
+		// if (this.state.userChosen !== '' && prevInput.userInput !== this.state.userInput && this.state.isViewingUserChosenProfile === true) {
+		// 	console.log('passed conditions in componentDidUpdate')
+		// 	console.log(this.state.userChosen)
+		// 	this.loadUserChosenInfo()
+		// 	this.loadUserChosenProfilePage()
+		// }
 
+	}
+
+	// this function changes the status of isViewingUserChosenProfile to false
+	exitUserChosenProfile = () => {
+		if (this.state.isViewingUserChosenProfile === true) {
+			this.setState({
+				isViewingUserChosenProfile: false
+			});
+			this.clearUserChosen()
+			console.log('exiting userChosen Profile')
+		}
 	}
 
 	// this clears the userChosen state when the state is not on ther 
@@ -332,7 +349,7 @@ class home extends Component {
 	}
 
 	loadUserChosenInfo = () => {
-		if (this.state.userChosen !== '') {
+		if (this.state.userChosen !== '' && this.state.isViewingUserChosenProfile === true) {
 			console.log("loadUserChosenInfo")
 			authMiddleWare(this.props.history);
 			const authToken = localStorage.getItem('AuthToken');
@@ -349,13 +366,12 @@ class home extends Component {
 					console.log(error);
 					this.setState({ errorMsg: 'Error in retrieving the data'});
 				});
-				console.log(this.state.userChosenProfilePicture)
 		}
 	}
 
 
 	loadUserChosenStories = () => {
-		if (this.state.userChosen !== '') {
+		if (this.state.userChosen !== '' && this.state.isViewingUserChosenProfile === true) {
 			authMiddleWare(this.props.history);
 			const authToken = localStorage.getItem('AuthToken');
 			axios.defaults.headers.common = { Authorization: `${authToken}` };
@@ -374,6 +390,8 @@ class home extends Component {
 	}
 
 
+	// filters the usernames shown on menu according to the user input in textbox
+	// sets the userchosen to selected username and sets isViewingUserChosenProfile to true
 	searchSorter = (username) => {
 		console.log(username.substring(0, this.state.userInput.length))
 
@@ -388,14 +406,22 @@ class home extends Component {
 						return {
 							userMenuVisable: state.userChosen.length > 0 ? false : this.state.userMenuVisable,
 							userInput: state.userChosen.length > 0 ? '' : this.state.userInput,
-							userInputError: ''
+							userInputError: '',
 						}
 					});
+					if (this.state.isViewingUserChosenProfile === true) {
+						this.exitUserChosenProfile()
+					}
 					this.setState((state) => {
 						return {
-							userChosen: username
+							userChosen: username,
+							isViewingUserChosenProfile: true
 						}
 					});
+					console.log('clicked on username: ' + this.state.userChosen)
+					console.log('isViewingUserChosenProfile is now set to: ' + this.state.isViewingUserChosenProfile)
+					this.loadUserChosenInfo()
+					this.loadUserChosenProfilePage()
 				}}
 				>
 				{username}

@@ -233,10 +233,18 @@ class stories extends Component {
             inspiredByStory: data.story.inspiredByStory,
 			viewOpen: true
 		});
+
+		if (data.story.inspiredByStory !== {}) {
+			this.setState({
+				inspiredByStory: data.story.inspiredByStory,
+			});
+		}
 	}
 
+	// this function checks if the story is editable and if it is then the buttons
+	// edit and delete are availble
     checkAccessForEditable = (story, editable) => {
-        if (editable === true) {
+        if (editable === true || story.userName === this.props.username) {
             return (
                 <div>
                 <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ story })}>
@@ -251,9 +259,10 @@ class stories extends Component {
         }
     }
 
-
+	// this function checks if the story is editable and if it is not then the button
+	// inspired are availble
     checkAccessForInspiredBy = (story, editable) => {
-        if (editable === false) {
+        if (editable === false && story.userName !== this.props.username) {
             return (
                 <div id='inspiredByWrapper'>
                     <Button size='small'color='primary' onClick={() => this.handleClickOpenInspiredBy({ story })}>
@@ -396,12 +405,12 @@ class stories extends Component {
 		};
 
 		const handleViewClose = () => {
-			this.setState({ viewOpen: false });
+			this.setState({ viewOpen: false});
 		};
 
 		const handleClose = (event) => {
             console.log('NOT GOOD')
-			this.setState({ open: false });
+			this.setState({ open: false});
 		};
 
 
@@ -481,6 +490,27 @@ class stories extends Component {
 											onChange={this.handleChange}
 											value={this.state.body}
 										/>
+									</Grid>
+									<Grid item xs={12}>
+										<Typography variant='h5'>
+											Try strategic storytelling to help others who may be experiencing something similar
+											to what you have experienced by asking yourself:
+										</Typography>
+										<Typography>
+											 - What was the problem or personal illness in this story?
+										</Typography>
+										<Typography>
+											 - What were you feeling at that momment?
+										</Typography>
+										<Typography>
+											 - What were the challenges you faced during your recovery journey and how did you overcome them?
+										</Typography>
+										<Typography>
+											 - What is your narrative of this story after overcoming these challenges?
+										</Typography>
+										<Typography>
+											 - If someone is currently facing these issues, what would they want to hear in order to inspire, inform, educate, or help problem-solve in their recovery journey? 
+										</Typography>
 									</Grid>
 								</Grid>
 							</form>
