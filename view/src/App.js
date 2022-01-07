@@ -6,6 +6,9 @@ import home from './pages/home'
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 
+
+// const App = () => <h1>{process.env.API_URL}</h1>;
+
 const theme = createMuiTheme({
   palette: {
     primary: {
