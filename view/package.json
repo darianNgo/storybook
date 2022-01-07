@@ -17,9 +17,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "webpack --env.API_URL=http://localhost:8000 --config webpack.config.dev.js",
+    "build": "webpack --env.API_URL=https://us-central1-storyapp-a3a29.cloudfunctions.net/api --config webpack.config.build.js"
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +40,10 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://us-central1-storyapp-a3a29.cloudfunctions.net/api"
+  "proxy": "https://us-central1-storyapp-a3a29.cloudfunctions.net/api",
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^4.8.0"
+  }
 }
